@@ -1,328 +1,391 @@
-### Objective
+# BEFRIX V2.0 — PARTE 4
 
-Build the core workspace experience of BEFRIX.
+## Workspace + Dashboard + Leads + Analytics + Events Module
 
-The platform does not execute automations.
+### Stack Obrigatória
 
-All business logic, calculations, AI processing and workflow execution are performed externally by N8N and persisted in Supabase.
-
-The frontend only consumes and visualizes data.
+* Next.js 15 App Router
+* TypeScript
+* TailwindCSS
+* shadcn/ui
+* React Query
+* Recharts
+* Lucide Icons
+* Supabase Client
 
 ---
 
-# Dashboard Structure
+# Estrutura de Pastas
 
-Create:
+app/
+├─ dashboard/
+│ ├─ page.tsx
+│ ├─ leads/
+│ │ ├─ page.tsx
+│ │ └─ [id]/page.tsx
+│ ├─ campaigns/page.tsx
+│ ├─ analytics/page.tsx
+│ ├─ insights/page.tsx
+│ ├─ workflows/page.tsx
+│ ├─ meetings/page.tsx
+│ ├─ messages/page.tsx
+│ ├─ events/
+│ │ ├─ page.tsx
+│ │ └─ [id]/page.tsx
+│ └─ layout.tsx
 
-/dashboard
+components/
+├─ dashboard/
+├─ analytics/
+├─ leads/
+├─ events/
+├─ shared/
+
+---
+
+# Dashboard Layout
+
+Criar layout persistente.
+
+Componentes:
+
+* Sidebar
+* Header
+* Content Area
 
 Sidebar:
 
-* Dashboard
-* Leads
-* Campaigns
-* Analytics
-* AI Insights
-* Workflows
-* Events
-* Messages
-* Meetings
-* Billing
-* Settings
+Dashboard
+Leads
+Campanhas
+Analytics
+Insights IA
+Workflows
+Eventos
+Mensagens
+Reuniões
+Pagamentos
+Configurações
 
-Conditional:
+Admin aparece apenas quando:
 
-* Admin
-
-Visible only when user role allows.
+user.role === "super_admin"
 
 ---
 
-# Executive Dashboard
+# Dashboard Principal
 
-Route:
+Rota:
 
 /dashboard
 
-Header:
-
-Display:
-
-* User Name
-* Current Date
-* Active Workspace
-* Current Plan
-
-KPIs:
-
-* Total Leads
-* Qualified Leads
-* Meetings Scheduled
-* Conversion Rate
-* Attributed Revenue
-* Estimated ROI
-* Pipeline Value
-
-Source:
+Consultar:
 
 dashboard_metrics
 
-No frontend calculations.
+Nunca calcular métricas no frontend.
+
+KPIs:
+
+* Leads
+* Leads Qualificados
+* Reuniões
+* Conversão
+* Receita
+* ROI
+* Pipeline
+
+Componentes:
+
+<KpiCard />
+
+Grid:
+
+grid-cols-1
+md:grid-cols-2
+xl:grid-cols-4
 
 ---
 
 # Analytics Widgets
 
-Create:
+Criar:
 
-* Leads Evolution (Line Chart)
-* Meetings (Bar Chart)
-* Conversion (Area Chart)
-* Revenue (Area Chart)
-* Funnel (Funnel Chart)
+<LeadGrowthChart />
+<MeetingChart />
+<ConversionChart />
+<RevenueChart />
+<FunnelChart />
 
-Funnel Stages:
+Utilizar Recharts.
 
-* Lead
-* Contact
-* Meeting
-* Proposal
-* Closed
-
-Source:
+Fonte:
 
 analytics_metrics
+
+Funil:
+
+Lead
+Contato
+Reunião
+Proposta
+Fechado
 
 ---
 
 # Activity Feed
 
-Display read-only events:
+Tabela:
 
-* Lead Created
-* Meeting Scheduled
-* Workflow Completed
-* Insight Generated
-* Campaign Created
+activity_logs
 
-Source:
+Exibir:
 
-analytics_events
+Lead criado
+Reunião agendada
+Workflow concluído
+Insight gerado
+Campanha criada
+
+Somente leitura.
 
 ---
 
-# Leads Module
+# Leads
 
-Route:
+Rota:
 
 /dashboard/leads
 
-Columns:
+Tabela:
 
-* Name
-* Company
-* Job Title
-* Channel
-* Score
-* Status
-* Last Activity
+Nome
+Empresa
+Cargo
+Canal
+Score
+Status
+Última Atividade
 
-Filters:
+Paginação obrigatória.
 
-* Status
-* Score
-* Segment
-* Date
-* Source
+---
 
-Search:
+# Filtros
 
-Global Instant Search
+Status
+Score
+Segmento
+Data
+Origem
+
+Busca global instantânea.
+
+React Query + debounce.
 
 ---
 
 # Lead Drawer
 
-Display:
+Abrir lateralmente.
 
-Profile
+Exibir:
 
-* Name
-* Company
-* Job Title
-
+Perfil
 Timeline
+Insights
 
-* Created
-* Enriched
-* Scored
-* Contacted
-* Replied
+Timeline:
 
-AI Section
+Criado
+Enriquecido
+Pontuado
+Contato realizado
+Resposta recebida
 
-* AI Score
-* Recommendation
-* Score Reason
+Dados:
 
-Sources:
-
-lead_scores
-next_actions
-
----
-
-# Campaigns
-
-Route:
-
-/dashboard/campaigns
-
-Display:
-
-* Active Campaigns
-* Paused Campaigns
-* Finished Campaigns
-
-Cards:
-
-* Name
-* Status
-* Leads
-* Replies
-* Meetings
-* Conversion
-
----
-
-# Analytics
-
-Route:
-
-/dashboard/analytics
-
-KPIs:
-
-* Leads
-* Replies
-* Meetings
-* Revenue
-* ROI
-
-Charts:
-
-* Line Chart
-* Area Chart
-* Bar Chart
-* Funnel Chart
+lead_events
 
 ---
 
 # AI Insights
 
-Route:
+Origem:
 
-/dashboard/insights
+lead_scores
+next_actions
 
-Display records from:
+Exibir:
 
-ai_insights
-
-Examples:
-
-* SaaS leads convert 32% better
-* Companies above 50 employees reply more
-* Tuesday performs best for outreach
-
-No AI execution on frontend.
+Score
+Classificação
+Motivo
+Recomendação
 
 ---
 
-# Workflows
+# Campaigns
 
-Route:
+Rota:
 
-/dashboard/workflows
+/dashboard/campaigns
 
-Display:
+Cards:
 
-* Name
-* Status
-* Last Run
-* Success Rate
-* Error Rate
+Nome
+Status
+Leads
+Respostas
+Reuniões
+Conversão
 
-Read-only.
+Dados:
 
-Sources:
-
-workflow_runs
-workflow_logs
+campaigns
 
 ---
 
-# Meetings
+# Analytics
 
-Route:
+Rota:
 
-/dashboard/meetings
+/dashboard/analytics
 
-Display:
+KPIs:
 
-* Lead
-* Company
-* Date
-* Status
-* Potential Value
+Leads
+Respostas
+Reuniões
+Receita
+ROI
 
-Views:
+Todos os gráficos alimentados por:
 
-* Month
-* Week
-* Agenda
+analytics_metrics
 
 ---
 
-# Messages
+# Events Module
 
-Route:
+Rota:
 
-/dashboard/messages
+/dashboard/events
 
-Display:
+Objetivo:
 
-* Email History
-* WhatsApp History
+Visualização de eventos processados pelo N8N.
 
-Read-only.
+Frontend nunca processa planilhas.
 
 ---
 
-# UX Requirements
+# Upload
 
-Premium Empty States
+Modal:
 
-Examples:
+Importar Evento
 
-"No leads found"
+Formatos:
 
-CTA:
+CSV
+XLSX
 
-Import Leads
+Limite:
 
-Loading:
+50MB
 
-* Skeletons
-* Suspense
-* Lazy Loading
+Bucket:
 
-Responsive:
+event-imports
 
-* 320+
-* 768+
-* 1280+
-* 1536+
+Fluxo:
 
-Design:
+Upload
+→ Storage
+→ event_imports
+→ N8N
 
-Inspired by Vercel, Stripe and Linear.
+---
+
+# Cards
+
+Eventos
+Participantes
+Empresas
+Leads
+
+Fonte:
+
+events
+event_imports
+
+---
+
+# Tabela Eventos
+
+Nome
+Cidade
+Data
+Participantes
+Patrocinadores
+Status
+
+Status:
+
+upcoming
+active
+completed
+cancelled
+
+---
+
+# Detalhe Evento
+
+/dashboard/events/[id]
+
+Mostrar:
+
+Dados Gerais
+Participantes
+Empresas
+Leads
+Reuniões
+Receita
+
+Tudo vindo pronto do Supabase.
+
+Sem cálculos.
+
+---
+
+# Empty States
+
+Exemplo:
+
+Nenhum evento importado.
+
+Botão:
+
+Importar Primeiro Evento
+
+---
+
+# Responsividade
+
+320+
+768+
+1280+
+1536+
+
+Mobile First.
+
+---
+
+# Loading
+
+Skeletons
+Suspense
+Lazy Loading
+
+Obrigatório.
