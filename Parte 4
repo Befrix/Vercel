@@ -1,0 +1,328 @@
+### Objective
+
+Build the core workspace experience of BEFRIX.
+
+The platform does not execute automations.
+
+All business logic, calculations, AI processing and workflow execution are performed externally by N8N and persisted in Supabase.
+
+The frontend only consumes and visualizes data.
+
+---
+
+# Dashboard Structure
+
+Create:
+
+/dashboard
+
+Sidebar:
+
+* Dashboard
+* Leads
+* Campaigns
+* Analytics
+* AI Insights
+* Workflows
+* Events
+* Messages
+* Meetings
+* Billing
+* Settings
+
+Conditional:
+
+* Admin
+
+Visible only when user role allows.
+
+---
+
+# Executive Dashboard
+
+Route:
+
+/dashboard
+
+Header:
+
+Display:
+
+* User Name
+* Current Date
+* Active Workspace
+* Current Plan
+
+KPIs:
+
+* Total Leads
+* Qualified Leads
+* Meetings Scheduled
+* Conversion Rate
+* Attributed Revenue
+* Estimated ROI
+* Pipeline Value
+
+Source:
+
+dashboard_metrics
+
+No frontend calculations.
+
+---
+
+# Analytics Widgets
+
+Create:
+
+* Leads Evolution (Line Chart)
+* Meetings (Bar Chart)
+* Conversion (Area Chart)
+* Revenue (Area Chart)
+* Funnel (Funnel Chart)
+
+Funnel Stages:
+
+* Lead
+* Contact
+* Meeting
+* Proposal
+* Closed
+
+Source:
+
+analytics_metrics
+
+---
+
+# Activity Feed
+
+Display read-only events:
+
+* Lead Created
+* Meeting Scheduled
+* Workflow Completed
+* Insight Generated
+* Campaign Created
+
+Source:
+
+analytics_events
+
+---
+
+# Leads Module
+
+Route:
+
+/dashboard/leads
+
+Columns:
+
+* Name
+* Company
+* Job Title
+* Channel
+* Score
+* Status
+* Last Activity
+
+Filters:
+
+* Status
+* Score
+* Segment
+* Date
+* Source
+
+Search:
+
+Global Instant Search
+
+---
+
+# Lead Drawer
+
+Display:
+
+Profile
+
+* Name
+* Company
+* Job Title
+
+Timeline
+
+* Created
+* Enriched
+* Scored
+* Contacted
+* Replied
+
+AI Section
+
+* AI Score
+* Recommendation
+* Score Reason
+
+Sources:
+
+lead_scores
+next_actions
+
+---
+
+# Campaigns
+
+Route:
+
+/dashboard/campaigns
+
+Display:
+
+* Active Campaigns
+* Paused Campaigns
+* Finished Campaigns
+
+Cards:
+
+* Name
+* Status
+* Leads
+* Replies
+* Meetings
+* Conversion
+
+---
+
+# Analytics
+
+Route:
+
+/dashboard/analytics
+
+KPIs:
+
+* Leads
+* Replies
+* Meetings
+* Revenue
+* ROI
+
+Charts:
+
+* Line Chart
+* Area Chart
+* Bar Chart
+* Funnel Chart
+
+---
+
+# AI Insights
+
+Route:
+
+/dashboard/insights
+
+Display records from:
+
+ai_insights
+
+Examples:
+
+* SaaS leads convert 32% better
+* Companies above 50 employees reply more
+* Tuesday performs best for outreach
+
+No AI execution on frontend.
+
+---
+
+# Workflows
+
+Route:
+
+/dashboard/workflows
+
+Display:
+
+* Name
+* Status
+* Last Run
+* Success Rate
+* Error Rate
+
+Read-only.
+
+Sources:
+
+workflow_runs
+workflow_logs
+
+---
+
+# Meetings
+
+Route:
+
+/dashboard/meetings
+
+Display:
+
+* Lead
+* Company
+* Date
+* Status
+* Potential Value
+
+Views:
+
+* Month
+* Week
+* Agenda
+
+---
+
+# Messages
+
+Route:
+
+/dashboard/messages
+
+Display:
+
+* Email History
+* WhatsApp History
+
+Read-only.
+
+---
+
+# UX Requirements
+
+Premium Empty States
+
+Examples:
+
+"No leads found"
+
+CTA:
+
+Import Leads
+
+Loading:
+
+* Skeletons
+* Suspense
+* Lazy Loading
+
+Responsive:
+
+* 320+
+* 768+
+* 1280+
+* 1536+
+
+Design:
+
+Inspired by Vercel, Stripe and Linear.
