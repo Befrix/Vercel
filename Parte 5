@@ -1,0 +1,717 @@
+# BEFRIX V2.0 — PARTE 5
+
+## N8N Integration Layer + Data Orchestration
+
+### Objetivo
+
+Transformar o N8N no motor operacional oficial da BEFRIX.
+
+A aplicação Next.js hospedada na Vercel nunca executa:
+
+* Workflows
+* Filas
+* Retries
+* IA
+* Scoring
+* Enriquecimento
+* Processamentos
+* Webhooks
+
+O frontend apenas:
+
+* Configura integrações
+* Exibe integrações
+* Monitora integrações
+* Visualiza resultados
+* Consome dados do Supabase
+
+---
+
+# Arquitetura Oficial
+
+Frontend (Next.js)
+↓
+Supabase
+↓
+N8N
+↓
+OpenAI
+↓
+Stripe
+↓
+Email
+↓
+WhatsApp
+↓
+Supabase
+↓
+Frontend
+
+---
+
+# Estrutura de Rotas
+
+app/
+└─ dashboard/
+├─ workflows/
+│  ├─ page.tsx
+│  └─ [id]/page.tsx
+│
+├─ system/
+│  ├─ page.tsx
+│  ├─ logs/
+│  │  └─ page.tsx
+│  └─ webhooks/
+│     └─ page.tsx
+│
+└─ settings/
+└─ integrations/
+└─ page.tsx
+
+---
+
+# Integrações
+
+Criar página:
+
+/dashboard/settings/integrations
+
+Objetivo:
+
+Centralizar todas as integrações da plataforma.
+
+---
+
+# Tabela Supabase
+
+integration_settings
+
+Campos:
+
+id uuid
+tenant_id uuid
+
+provider text
+
+status text
+
+config jsonb
+
+created_at timestamptz
+
+updated_at timestamptz
+
+---
+
+# Providers
+
+N8N
+
+OpenAI
+
+Resend
+
+WhatsApp
+
+Stripe
+
+---
+
+# Interface de Integrações
+
+Criar cards:
+
+<IntegrationCard />
+
+Cada card exibe:
+
+Nome
+Status
+Última sincronização
+Descrição
+
+---
+
+# Status Permitidos
+
+connected
+
+disconnected
+
+error
+
+syncing
+
+---
+
+# Exemplo
+
+N8N
+
+Status:
+Connected
+
+Última sincronização:
+2 minutos atrás
+
+---
+
+# Workflow Center
+
+Rota:
+
+/dashboard/workflows
+
+Objetivo:
+
+Visualizar workflows executados pelo N8N.
+
+Não executar workflows.
+
+---
+
+# Tabela
+
+workflows
+
+Campos:
+
+id uuid
+
+tenant_id uuid
+
+name text
+
+description text
+
+status text
+
+n8n_workflow_id text
+
+created_at timestamptz
+
+updated_at timestamptz
+
+---
+
+# Status Workflow
+
+draft
+
+active
+
+paused
+
+archived
+
+---
+
+# Workflows List
+
+Exibir:
+
+Nome
+
+Status
+
+Última execução
+
+Execuções
+
+Taxa Sucesso
+
+Taxa Erro
+
+---
+
+# Tabela Workflow Runs
+
+workflow_runs
+
+Campos:
+
+id uuid
+
+workflow_id uuid
+
+tenant_id uuid
+
+status text
+
+started_at timestamptz
+
+finished_at timestamptz
+
+duration integer
+
+execution_id text
+
+---
+
+# Status Execução
+
+queued
+
+running
+
+success
+
+failed
+
+cancelled
+
+---
+
+# Workflow Details
+
+Rota:
+
+/dashboard/workflows/[id]
+
+Mostrar:
+
+Resumo
+
+Timeline
+
+Logs
+
+Resultado
+
+Métricas
+
+---
+
+# Workflow Timeline
+
+Exibir:
+
+Início
+
+Etapas
+
+Fim
+
+Tempo Total
+
+---
+
+# Workflow Logs
+
+Tabela:
+
+workflow_logs
+
+Campos:
+
+id uuid
+
+workflow_run_id uuid
+
+event text
+
+message text
+
+level text
+
+created_at timestamptz
+
+---
+
+# Log Levels
+
+info
+
+warning
+
+error
+
+critical
+
+---
+
+# Tela de Logs
+
+Tabela Premium
+
+Colunas:
+
+Data
+
+Evento
+
+Nível
+
+Mensagem
+
+---
+
+# Retry Information
+
+Frontend não executa retry.
+
+Mostrar apenas:
+
+retry_count
+
+max_retries
+
+Origem:
+
+workflow_runs
+
+---
+
+# Webhook Center
+
+Rota:
+
+/dashboard/system/webhooks
+
+Objetivo:
+
+Visualizar eventos recebidos.
+
+---
+
+# Tabela
+
+webhook_events
+
+Campos:
+
+id uuid
+
+tenant_id uuid
+
+event_type text
+
+status text
+
+received_at timestamptz
+
+processed_at timestamptz
+
+payload jsonb
+
+---
+
+# Eventos Permitidos
+
+email_opened
+
+email_clicked
+
+lead_replied
+
+meeting_booked
+
+meeting_completed
+
+workflow_finished
+
+workflow_failed
+
+---
+
+# Dashboard Webhooks
+
+KPIs
+
+Eventos Recebidos
+
+Eventos Processados
+
+Falhas
+
+Latência Média
+
+---
+
+# Health Center
+
+Rota:
+
+/dashboard/system
+
+Objetivo:
+
+Monitoramento visual.
+
+Sem verificações diretas.
+
+Apenas consumir métricas persistidas.
+
+---
+
+# Status Cards
+
+Criar:
+
+<N8nStatusCard />
+
+<OpenAIStatusCard />
+
+<EmailStatusCard />
+
+<WhatsappStatusCard />
+
+<StripeStatusCard />
+
+<SupabaseStatusCard />
+
+---
+
+# Informações Exibidas
+
+Status
+
+Latência
+
+Último Heartbeat
+
+Última Atualização
+
+---
+
+# Estados
+
+healthy
+
+warning
+
+critical
+
+offline
+
+---
+
+# Métricas de Saúde
+
+Tabela:
+
+platform_metrics
+
+Campos:
+
+id uuid
+
+tenant_id uuid
+
+service text
+
+metric text
+
+value numeric
+
+created_at timestamptz
+
+---
+
+# Serviços
+
+n8n
+
+openai
+
+supabase
+
+stripe
+
+email
+
+whatsapp
+
+---
+
+# Alert Center
+
+Tabela:
+
+system_alerts
+
+Campos:
+
+id uuid
+
+tenant_id uuid
+
+severity text
+
+title text
+
+description text
+
+status text
+
+created_at timestamptz
+
+---
+
+# Severidades
+
+info
+
+warning
+
+high
+
+critical
+
+---
+
+# Interface Alertas
+
+Mostrar:
+
+Título
+
+Descrição
+
+Severidade
+
+Status
+
+Data
+
+---
+
+# Audit Logs
+
+Tabela:
+
+audit_logs
+
+Campos:
+
+id uuid
+
+tenant_id uuid
+
+user_id uuid
+
+action text
+
+resource text
+
+metadata jsonb
+
+created_at timestamptz
+
+---
+
+# Registrar Auditoria
+
+Login
+
+Logout
+
+Configuração Integração
+
+Alteração Workflow
+
+Mudança Plano
+
+Configuração Billing
+
+Alteração Tenant
+
+---
+
+# React Query
+
+Criar hooks:
+
+useIntegrations()
+
+useWorkflows()
+
+useWorkflowRuns()
+
+useWorkflowLogs()
+
+useWebhookEvents()
+
+usePlatformMetrics()
+
+useSystemAlerts()
+
+---
+
+# Componentes
+
+components/integrations/
+
+IntegrationCard.tsx
+
+IntegrationStatusBadge.tsx
+
+---
+
+components/workflows/
+
+WorkflowCard.tsx
+
+WorkflowTable.tsx
+
+WorkflowTimeline.tsx
+
+WorkflowLogsTable.tsx
+
+---
+
+components/system/
+
+HealthCard.tsx
+
+ServiceStatusCard.tsx
+
+AlertCard.tsx
+
+WebhookTable.tsx
+
+LogsTable.tsx
+
+---
+
+# Realtime
+
+Ativar Supabase Realtime para:
+
+workflow_runs
+
+workflow_logs
+
+webhook_events
+
+system_alerts
+
+platform_metrics
+
+---
+
+# Regras Obrigatórias
+
+Nunca executar workflow no frontend.
+
+Nunca chamar OpenAI diretamente.
+
+Nunca executar webhook.
+
+Nunca executar retry.
+
+Nunca criar scheduler próprio.
+
+Nunca criar fila própria.
+
+Nunca criar workflow engine própria.
+
+Toda operação pertence ao N8N.
+
+O frontend existe apenas para visualização, monitoramento e configuração.
+
+---
+
+# Resultado Esperado
+
+A BEFRIX deve funcionar como uma camada visual enterprise semelhante a Vercel, Stripe e Linear, permitindo monitorar toda a operação executada pelo N8N através de dashboards rápidos, limpos e totalmente desacoplados da lógica operacional.
